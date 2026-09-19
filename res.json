@@ -14,18 +14,7 @@
       "name": "药品",
       "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_23060001.png",
       "children": []
-    },
-    {
-      "name": "装备",
-      "iconUrl": "",
-      "children": [
-        { "name": "武器", "iconUrl": "" },
-        { "name": "护甲", "iconUrl": "" }
-      ]
-    },
-    { "name": "消耗品", "iconUrl": "", "children": [] },
-    { "name": "图鉴",   "iconUrl": "", "children": [] },
-    { "name": "剧情",   "iconUrl": "", "children": [] }
+    }
   ],
   "items": [
     {
@@ -166,13 +155,6 @@
       ]
     },
     {
-      "id": "008",
-      "name": "离子刃",
-      "category": "武器",
-      "iconUrl": "",
-      "desc": "高频振动的 **离子化近战武器**。"
-    },
-    {
     "id": "101",
     "name": "医疗注射器",
     "category": "药品",
@@ -196,27 +178,6 @@
           { "label": "科技树等级",   "text": "2" },
           { "label": "研发废料数量", "text": "40" }
         ]
-    },
-    {
-      "id": "010",
-      "name": "护盾细胞",
-      "category": "消耗品",
-      "iconUrl": "",
-      "desc": "注入后生成一层可吸收伤害的 **生物护盾**。"
-    },
-    {
-      "id": "011",
-      "name": "变异体·巨颚",
-      "category": "图鉴",
-      "iconUrl": "",
-      "desc": "因 **核辐射变异** 的节肢类生物。"
-    },
-    {
-      "id": "012",
-      "name": "旧世界数据芯片",
-      "category": "剧情",
-      "iconUrl": "",
-      "desc": "灾变前遗留的 **数据存储芯片**。"
     }
   ]
 }
