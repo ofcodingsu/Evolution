@@ -1,0 +1,222 @@
+{
+  "categories": [
+    {
+      "name": "建造",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_10010043.png",
+      "children": []
+    },
+    {
+      "name": "资源",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12030001.png",
+      "children": []
+    },
+    {
+      "name": "药品",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_23060001.png",
+      "children": []
+    },
+    {
+      "name": "装备",
+      "iconUrl": "",
+      "children": [
+        { "name": "武器", "iconUrl": "" },
+        { "name": "护甲", "iconUrl": "" }
+      ]
+    },
+    { "name": "消耗品", "iconUrl": "", "children": [] },
+    { "name": "图鉴",   "iconUrl": "", "children": [] },
+    { "name": "剧情",   "iconUrl": "", "children": [] }
+  ],
+  "items": [
+    {
+      "id": "001",
+      "name": "硫磺",
+      "category": "资源",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020001.png",
+      "desc": "可用于 **制作**火药.",
+      "craftInfo": [
+        {
+          "label": "无法制作",
+          "type": "materials",
+          "materials": []
+        }
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+      "id": "002",
+      "name": "金属矿石",
+      "category": "资源",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020002.png",
+      "desc": "可在熔炉中冶炼出金属碎片.",
+      "craftInfo": [
+        {
+          "label": "无法制作",
+          "type": "materials",
+          "materials": []
+        }
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+      "id": "003",
+      "name": "高级金属矿石",
+      "category": "一级工作台",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020003.png",
+      "desc": "可在熔炉中冶炼出高级金属.",
+      "craftInfo": [
+        {
+          "label": "无法制作",
+          "type": "materials",
+          "materials": []
+        }
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+   "id": "004",
+   "name": "石头",
+   "category": "资源",
+   "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020004.png",
+   "desc": "建筑的基础材料之一.",
+    "craftInfo": [
+        {
+          "label": "无法制作",
+          "type": "materials",
+          "materials": []
+        }
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+   "id": "005",
+   "name": "高级金属",
+   "category": "资源",
+   "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020005.png",
+   "desc": "可用于 **升级**建筑或 **制作**防具、武器、摆件等物品.",
+    "craftInfo": [
+        {
+          "label": "无法制作",
+          "type": "materials",
+          "materials": []
+        }
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+      "id": "006",
+      "name": "低品质燃油",
+      "category": "资源",
+      "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020006.png",
+      "desc": "可用于 **制作**燃烧瓶、医疗注射器,作为火焰炮塔、小型燃油发电机、载具等 **能源**.",
+      "craftInfo": [
+        {
+          "label": "制作成本",
+          "type": "materials",
+          "materials": [
+            { "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12040001.png", "id": "bu", "count": 3 },
+            { "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12010002.png", "id": "zhifang", "count": 9 }
+          ]
+        },
+        { "label": "工作台",   "type": "materials", "iconUrl": "", "text": "随身制作" },
+        { "label": "工作结果",   "type": "icon", "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020006.png", "text": "" }
+
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+   "id": "007",
+   "name": "火药",
+   "category": "资源",
+   "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020007.png",
+   "desc": "子弹、 **爆炸物**的关键原料.",
+    "craftInfo": [
+        {
+          "label": "制作成本",
+          "type": "materials",
+          "materials": [
+
+          ]
+        },
+        { "label": "工作台",   "type": "materials", "text": "一级工作台" },
+        { "label": "工作结果",   "type": "icon", "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020007.png", "text": "" }
+
+      ],
+      "researchInfo": [
+        { "label": "科技树等级",   "text": "0" },
+        { "label": "研发废料数量", "text": "0" }
+      ]
+    },
+    {
+      "id": "008",
+      "name": "离子刃",
+      "category": "武器",
+      "iconUrl": "",
+      "desc": "高频振动的 **离子化近战武器**。"
+    },
+    {
+    "id": "101",
+    "name": "医疗注射器",
+    "category": "药品",
+    "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_23060001.png",
+    "desc": "立即恢复15点 **生命值**,缓慢恢复20点 **生命值**, **污染**-10.",
+      "craftInfo": [
+          {
+            "label": "制作成本",
+            "type": "materials",
+            "materials": [
+              { "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12040001.png", "id": "bu", "count": 15 },
+              { "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020013.png", "id": "tie", "count": 10 },
+              { "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_12020006.png", "id": "you", "count": 10 }
+            ]
+          },
+          { "label": "工作台",   "type": "materials", "text": "二级工作台" },
+          { "label": "工作结果",   "type": "icon", "iconUrl": "https://game.gtimg.cn/images/rm/cp/a20250711rust/icon/icon_23060001.png", "text": "" }
+
+        ],
+        "researchInfo": [
+          { "label": "科技树等级",   "text": "2" },
+          { "label": "研发废料数量", "text": "40" }
+        ]
+    },
+    {
+      "id": "010",
+      "name": "护盾细胞",
+      "category": "消耗品",
+      "iconUrl": "",
+      "desc": "注入后生成一层可吸收伤害的 **生物护盾**。"
+    },
+    {
+      "id": "011",
+      "name": "变异体·巨颚",
+      "category": "图鉴",
+      "iconUrl": "",
+      "desc": "因 **核辐射变异** 的节肢类生物。"
+    },
+    {
+      "id": "012",
+      "name": "旧世界数据芯片",
+      "category": "剧情",
+      "iconUrl": "",
+      "desc": "灾变前遗留的 **数据存储芯片**。"
+    }
+  ]
+}

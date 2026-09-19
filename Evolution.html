@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>失控进化百科</title>
+<style>
+/* ========== 基础重置 ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+/* ========== 整体布局 ========== */
+.app { display: flex; height: 100vh; width: 100%; }
+/* ========== 左侧侧边栏 ========== */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.25s ease;
+  z-index: 100;
+}
+.sidebar-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.sidebar-header h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; color: #111; }
+.sidebar-header p { font-size: 12px; color: #888; margin-top: 4px; }
+/* 分类菜单容器 */
+.category-menu {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px 0;
+}
+/* 单个分类行（一级 / 叶子共用样式） */
+.cat-row {
+  display: flex;
+  align-items: center;
+  padding: 9px 16px;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.cat-row:hover { background: #ececec; }
+.cat-row.active {
+  background: #e8e8e8;
+  border-left-color: #111;
+  color: #111;
+  font-weight: 600;
+}
+/* 展开/折叠箭头（SVG 小箭头，仅箭头区域可点击展开收起） */
+.cat-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  border-radius: 3px;
+  /* SVG 本身朝下，收起时旋转朝右 */
+  transform: rotate(-90deg);
+}
+.cat-arrow svg { width: 28px; height: 28px; display: block; }
+.cat-arrow:hover { background: #e0e0e0; }
+.cat-arrow.expanded { transform: rotate(0deg); } /* 展开：朝下 */
+.cat-arrow.placeholder { visibility: hidden; cursor: default; }
+/* 分类小图标 */
+.cat-icon {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.cat-icon img { width: 100%; height: 100%; object-fit: cover; }
+.cat-icon .placeholder {
+  width: 100%; height: 100%;
+  background: #d8d8d8; color: #999;
+  font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cat-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 子分类容器 */
+.cat-children { list-style: none; overflow: hidden; }
+.cat-children.collapsed { display: none; }
+.cat-children .cat-row { padding-left: 44px; font-size: 13px; }
+/* 移动端汉堡 */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 200;
+  width: 40px; height: 40px;
+  background: #111; color: #fff;
+  border: none; border-radius: 4px;
+  font-size: 18px; cursor: pointer;
+  align-items: center; justify-content: center;
+}
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 90;
+}
+/* ========== 右侧主内容区 ========== */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #fff;
+}
+.main-header { margin-bottom: 20px; padding-top: 30px; }
+.main-header h2 { font-size: 20px; font-weight: 700; color: #111; }
+.main-header .count { font-size: 13px; color: #888; margin-top: 4px; }
+/* ========== 卡片网格 ========== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  border-color: #bbb;
+}
+.card .icon-wrap {
+  width: 64px; height: 64px;
+  margin: 0 auto 12px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.card .icon-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .icon-wrap .placeholder {
+  width: 100%; height: 100%;
+  background: #d0d0d0; color: #999; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card .name { font-size: 14px; font-weight: 600; color: #1a1a1a; line-height: 1.4; word-break: break-all; }
+/* 加载 / 空状态 */
+.loading { grid-column: 1 / -1; text-align: center; padding: 60px 0; color: #999; font-size: 14px; }
+.loading .spinner {
+  width: 28px; height: 28px;
+  border: 3px solid #e0e0e0; border-top-color: #333;
+  border-radius: 50%; margin: 0 auto 12px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { grid-column: 1 / -1; text-align: center; padding: 60px 0; color: #aaa; font-size: 14px; }
+/* ============================================================
+ *  全屏详情页
+ * ==========================================================*/
+.detail-page {
+  display: none;
+  position: fixed; inset: 0;
+  background: #fafafa;
+  z-index: 300;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.detail-page.show { display: block; }
+.detail-topbar {
+  position: sticky; top: 0;
+  display: flex; align-items: center;
+  padding: 14px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  z-index: 10;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  color: #111; font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; flex-shrink: 0;
+}
+.back-btn:hover { background: #ececec; }
+.detail-topbar .topbar-title {
+  flex: 1; text-align: center;
+  font-size: 15px; font-weight: 600; color: #111;
+  padding-right: 36px;
+}
+.detail-body { max-width: 720px; margin: 0 auto; padding: 24px 20px 60px; }
+/* 头部：左图右文 */
+.detail-header {
+  display: flex; gap: 20px;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.detail-header .h-icon {
+  width: 120px; height: 120px; min-width: 120px;
+  background: #f0f0f0; border-radius: 8px;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-header .h-icon img { width: 100%; height: 100%; object-fit: cover; }
+.detail-header .h-icon .placeholder {
+  width: 100%; height: 100%;
+  background: #d0d0d0; color: #999; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-header .h-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.detail-header .h-name { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 10px; }
+.detail-header .h-desc { font-size: 14px; line-height: 1.7; color: #555; white-space: pre-wrap; word-break: break-word; }
+.hl { color: #b8860b; font-weight: 600; }
+/* 区块卡片 */
+.section {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.section-title {
+  display: flex; align-items: center;
+  font-size: 16px; font-weight: 700; color: #111;
+  margin-bottom: 16px;
+}
+.section-title::before {
+  content: "";
+  display: inline-block;
+  width: 4px; height: 16px;
+  background: linear-gradient(180deg, #a4462c 60%, #ffffff 100%); border-radius: 2px;
+  margin-right: 10px;
+}
+.info-row {
+  display: flex; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 14px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-row .label { width: 90px; min-width: 90px; color: #888; }
+.info-row .value { flex: 1; color: #222; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.material-chip { display: inline-flex; align-items: center; gap: 6px; }
+.material-chip .m-icon {
+  width: 28px; height: 28px;
+  background: #f0f0f0; border-radius: 4px;
+  overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.material-chip .m-icon img { width: 100%; height: 100%; object-fit: cover; }
+.material-chip .m-icon .placeholder {
+  width: 100%; height: 100%;
+  background: #d0d0d0; color: #999; font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.material-chip .m-count { font-size: 14px; color: #222; font-weight: 600; }
+.mini-icon {
+  width: 28px; height: 28px;
+  background: #f0f0f0; border-radius: 4px;
+  overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center;
+  vertical-align: middle;
+}
+.mini-icon img { width: 100%; height: 100%; object-fit: cover; }
+.mini-icon .placeholder {
+  width: 100%; height: 100%;
+  background: #d0d0d0; color: #999; font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+/* ========== 响应式 ========== */
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+}
+@media (max-width: 768px) {
+  .menu-toggle { display: flex; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; height: 100%;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .overlay.show { display: block; }
+  .main { padding: 16px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .detail-header { flex-direction: column; align-items: flex-start; }
+  .detail-header .h-icon { width: 100%; height: 160px; min-width: 0; }
+}
+@media (max-width: 420px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+<div class="overlay" id="overlay"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>失控进化百科</h1>
+      <p>图鉴 · 资料 · 汇总</p>
+    </div>
+    <ul class="category-menu" id="categoryMenu"></ul>
+  </aside>
+  <main class="main">
+    <div class="main-header">
+      <h2 id="currentTitle">全部</h2>
+      <div class="count" id="itemCount"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<div class="detail-page" id="detailPage">
+  <div class="detail-topbar">
+    <button class="back-btn" id="backBtn" aria-label="返回">←</button>
+    <div class="topbar-title">物品详情</div>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+<!-- 数据文件：res.json（外部加载，需通过本地服务器或发布后访问） -->
+<script>
+/* ============================================================
+ *  数据配置（外部加载模式）
+ *  —— 数据从同目录 res.json 运行时加载（fetch）
+ *  —— 浏览器在本地文件方式（file://）下会拦截 fetch，
+ *     需通过本地服务器访问（如 python3 -m http.server）或发布后打开
+ *  —— 直接编辑 res.json 即可增删物品/分类，无需改动本文件
+ * ==========================================================*/
+let CATEGORIES = [];
+let ITEMS = [];
+/* ============================================================
+ *  渲染与交互逻辑
+ * ==========================================================*/
+const categoryMenu = document.getElementById('categoryMenu');
+const grid = document.getElementById('grid');
+const currentTitle = document.getElementById('currentTitle');
+const itemCount = document.getElementById('itemCount');
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+const overlay = document.getElementById('overlay');
+const detailPage = document.getElementById('detailPage');
+const backBtn = document.getElementById('backBtn');
+const detailBody = document.getElementById('detailBody');
+let currentCategory = '全部';
+/* 下拉箭头 SVG（收起时由 CSS 旋转为朝右，展开时朝下） */
+const ARROW_SVG =
+  '<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">' +
+  '<path d="M814.592 348.2112l-261.7344 346.624a51.2 51.2 0 0 1-81.7152 0L209.408 348.2624A25.6 25.6 0 0 1 229.8368 307.2H794.112a25.6 25.6 0 0 1 20.48 41.0112z" fill="#5A5A68"/>' +
+  '</svg>';
+/* ---------- 工具：图标 HTML，空地址/失败返回灰块 ---------- */
+function iconHTML(url, fallbackText) {
+  if (!url) return '<div class="placeholder">' + fallbackText + '</div>';
+  return '<img src="' + url + '" alt="" ' +
+    'onerror="this.outerHTML=\'<div class=&quot;placeholder&quot;>' + fallbackText + '</div>\'">';
+}
+/* ---------- 工具：解析 **高亮** ---------- */
+function parseDesc(text) {
+  if (!text) return '';
+  var esc = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return esc.replace(/\*\*(.+?)\*\*/g, '<span class="hl">$1</span>');
+}
+/* ---------- 工具：分类名是否命中当前选中（含父分类下所有子项） ---------- */
+function categoryMatches(name) {
+  if (currentCategory === '全部') return true;
+  if (name === currentCategory) return true;
+  var parent = CATEGORIES.find(function (c) {
+    return c.children && c.children.some(function (ch) { return ch.name === name; });
+  });
+  return parent && parent.name === currentCategory;
+}
+/* ---------- 渲染侧边栏分类树 ---------- */
+function renderCategories() {
+  categoryMenu.innerHTML = '';
+  // "全部"项
+  var allLi = document.createElement('li');
+  allLi.className = 'cat-row' + (currentCategory === '全部' ? ' active' : '');
+  allLi.innerHTML =
+    '<span class="cat-arrow placeholder">' + ARROW_SVG + '</span>' +
+    '<span class="cat-icon"><svg t="1789786431260" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2979" width="200" height="200"><path d="M512 1255.489906" p-id="2980"></path><path d="M492.248651 221.767739c0-30.394563-24.561263-54.955827-54.955827-54.955827L246.329003 166.811913c-30.394563 0-54.955827 24.561263-54.955827 54.955827l0 190.963822c0 30.394563 24.561263 54.955827 54.955827 54.955827l190.963822 0c30.394563 0 54.955827-24.561263 54.955827-54.955827L492.248651 221.767739zM447.219668 412.731561c0 5.526284-4.40056 9.926844-9.926844 9.926844L246.329003 422.658405c-5.526284 0-9.926844-4.40056-9.926844-9.926844L236.402159 221.767739c0-5.526284 4.40056-9.926844 9.926844-9.926844l190.963822 0c5.526284 0 9.926844 4.40056 9.926844 9.926844L447.219668 412.731561z" p-id="2981"></path><path d="M845.31681 221.767739c0-30.394563-24.561263-54.955827-54.955827-54.955827L599.397162 166.811913c-30.394563 0-54.955827 24.561263-54.955827 54.955827l0 190.963822c0 30.394563 24.561263 54.955827 54.955827 54.955827l190.963822 0c30.394563 0 54.955827-24.561263 54.955827-54.955827L845.31681 221.767739zM800.287827 412.731561c0 5.526284-4.40056 9.926844-9.926844 9.926844L599.397162 422.658405c-5.526284 0-9.926844-4.40056-9.926844-9.926844L589.470318 221.767739c0-5.526284 4.40056-9.926844 9.926844-9.926844l190.963822 0c5.526284 0 9.926844 4.40056 9.926844 9.926844L800.287827 412.731561z" p-id="2982"></path><path d="M492.248651 562.555267c0-30.394563-24.561263-54.955827-54.955827-54.955827L246.329003 507.59944c-30.394563 0-54.955827 24.561263-54.955827 54.955827l0 190.963822c0 30.394563 24.561263 54.955827 54.955827 54.955827l190.963822 0c30.394563 0 54.955827-24.561263 54.955827-54.955827L492.248651 562.555267zM447.219668 753.519089c0 5.526284-4.40056 9.926844-9.926844 9.926844L246.329003 763.445932c-5.526284 0-9.926844-4.40056-9.926844-9.926844L236.402159 562.555267c0-5.526284 4.40056-9.926844 9.926844-9.926844l190.963822 0c5.526284 0 9.926844 4.40056 9.926844 9.926844L447.219668 753.519089z" p-id="2983"></path><path d="M694.879073 512.71637c-82.996602 0-150.437737 67.441135-150.437737 150.437737s67.441135 150.437737 150.437737 150.437737 150.437737-67.441135 150.437737-150.437737S777.875675 512.71637 694.879073 512.71637zM694.879073 768.562862c-58.128323 0-105.408755-47.280432-105.408755-105.408755s47.280432-105.408755 105.408755-105.408755 105.408755 47.280432 105.408755 105.408755S753.007396 768.562862 694.879073 768.562862z" p-id="2984"></path></svg></span>' +
+    '<span class="cat-name">全部</span>';
+  allLi.addEventListener('click', function () {
+    currentCategory = '全部';
+    renderCategories();
+    renderGrid();
+    closeSidebarOnMobile();
+  });
+  categoryMenu.appendChild(allLi);
+  // 遍历一级分类
+  CATEGORIES.forEach(function (cat) {
+    var hasChildren = cat.children && cat.children.length > 0;
+    var li = document.createElement('li');
+    var row = document.createElement('div');
+    row.className = 'cat-row';
+    var selfActive = currentCategory === cat.name ||
+      (hasChildren && cat.children.some(function (ch) { return ch.name === currentCategory; }));
+    if (selfActive) row.classList.add('active');
+    // 箭头：有子项才显示（默认收起，CSS 旋转朝右）；无子项占位对齐
+    var arrowHtml = hasChildren
+      ? '<span class="cat-arrow">' + ARROW_SVG + '</span>'
+      : '<span class="cat-arrow placeholder">' + ARROW_SVG + '</span>';
+    row.innerHTML =
+      arrowHtml +
+      '<span class="cat-icon">' + iconHTML(cat.iconUrl, cat.name.charAt(0)) + '</span>' +
+      '<span class="cat-name">' + cat.name + '</span>';
+    li.appendChild(row);
+    if (hasChildren) {
+      var childUl = document.createElement('ul');
+      childUl.className = 'cat-children collapsed'; // 默认全部收起
+      cat.children.forEach(function (ch) {
+        var childRow = document.createElement('li');
+        childRow.className = 'cat-row';
+        if (ch.name === currentCategory) childRow.classList.add('active');
+        childRow.innerHTML =
+          '<span class="cat-arrow placeholder">' + ARROW_SVG + '</span>' +
+          '<span class="cat-icon">' + iconHTML(ch.iconUrl, ch.name.charAt(0)) + '</span>' +
+          '<span class="cat-name">' + ch.name + '</span>';
+        childRow.addEventListener('click', function (e) {
+          e.stopPropagation();
+          currentCategory = ch.name;
+          renderCategories();
+          renderGrid();
+          closeSidebarOnMobile();
+        });
+        childUl.appendChild(childRow);
+      });
+      li.appendChild(childUl);
+      // 箭头单独点击：只展开/收起，不筛选
+      var arrowEl = row.querySelector('.cat-arrow');
+      arrowEl.addEventListener('click', function (e) {
+        e.stopPropagation();
+        childUl.classList.toggle('collapsed');
+        arrowEl.classList.toggle('expanded');
+      });
+      // 点击整行（除箭头外）：只筛选该大类，不影响展开状态
+      row.addEventListener('click', function () {
+        currentCategory = cat.name;
+        renderCategories();
+        renderGrid();
+        closeSidebarOnMobile();
+      });
+    } else {
+      // 无子项：直接筛选
+      row.addEventListener('click', function () {
+        currentCategory = cat.name;
+        renderCategories();
+        renderGrid();
+        closeSidebarOnMobile();
+      });
+    }
+    categoryMenu.appendChild(li);
+  });
+}
+/* ---------- 渲染物品网格 ---------- */
+function renderGrid() {
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div>加载中…</div>';
+  setTimeout(function () {
+    var list = ITEMS.filter(function (it) { return categoryMatches(it.category); });
+    currentTitle.textContent = currentCategory;
+    itemCount.textContent = '共 ' + list.length + ' 项';
+    if (list.length === 0) {
+      grid.innerHTML = '<div class="empty">该分类下暂无物品</div>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (it) {
+      html +=
+        '<div class="card" data-id="' + it.id + '">' +
+          '<div class="icon-wrap">' + iconHTML(it.iconUrl, it.name.charAt(0)) + '</div>' +
+          '<div class="name">' + it.name + '</div>' +
+        '</div>';
+    });
+    grid.innerHTML = html;
+    document.querySelectorAll('.card').forEach(function (cardEl) {
+      cardEl.addEventListener('click', function () {
+        var id = this.getAttribute('data-id');
+        var item = ITEMS.find(function (it) { return it.id === id; });
+        if (item) openDetail(item);
+      });
+    });
+  }, 200);
+}
+/* ---------- 详情页 ---------- */
+function renderHeader(item) {
+  return (
+    '<div class="detail-header">' +
+      '<div class="h-icon">' + iconHTML(item.iconUrl, item.name.charAt(0)) + '</div>' +
+      '<div class="h-info">' +
+        '<div class="h-name">' + item.name + '</div>' +
+        '<div class="h-desc">' + parseDesc(item.desc || '') + '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+function renderSection(title, rows) {
+  if (!rows || rows.length === 0) return '';
+  var html = '<div class="section"><div class="section-title">' + title + '</div>';
+  rows.forEach(function (row) {
+    html += '<div class="info-row"><div class="label">' + row.label + '</div><div class="value">';
+    if (row.type === 'materials' && row.materials) {
+      row.materials.forEach(function (m) {
+        html +=
+          '<span class="material-chip">' +
+            '<span class="m-icon">' + iconHTML(m.iconUrl, '材') + '</span>' +
+            '<span class="m-count">' + m.count + '</span>' +
+          '</span>';
+      });
+    } else if (row.type === 'icon') {
+      html += '<span class="mini-icon">' + iconHTML(row.iconUrl, '图') + '</span>';
+      if (row.text) html += '<span>' + row.text + '</span>';
+    } else {
+      html += '<span>' + (row.text || '') + '</span>';
+    }
+    html += '</div></div>';
+  });
+  return html + '</div>';
+}
+function openDetail(item) {
+  var html = renderHeader(item);
+  html += renderSection('制作方式', item.craftInfo);
+  html += renderSection('研发成本', item.researchInfo);
+  detailBody.innerHTML = html;
+  detailPage.classList.add('show');
+  detailPage.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function goBack() {
+  detailPage.classList.remove('show');
+  document.body.style.overflow = '';
+}
+backBtn.addEventListener('click', goBack);
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && detailPage.classList.contains('show')) goBack();
+});
+/* ---------- 移动端侧边栏 ---------- */
+function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+function closeSidebarOnMobile() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+menuToggle.addEventListener('click', function () {
+  if (sidebar.classList.contains('open')) closeSidebarOnMobile();
+  else openSidebar();
+});
+overlay.addEventListener('click', closeSidebarOnMobile);
+/* ---------- 加载外部数据并初始化 ---------- */
+function loadData() {
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div>加载中…</div>';
+  fetch('res.json', { cache: 'no-store' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      CATEGORIES = data.categories || [];
+      ITEMS = data.items || [];
+      renderCategories();
+      renderGrid();
+    })
+    .catch(function (err) {
+      currentTitle.textContent = currentCategory;
+      itemCount.textContent = '加载失败';
+      grid.innerHTML =
+        '<div class="empty">无法加载 res.json（' + err.message + '）<br>' +
+        '浏览器在本地文件方式（file://）下会拦截 fetch 请求，' +
+        '请通过本地服务器访问（如 python3 -m http.server）或发布后打开。</div>';
+    });
+}
+loadData();
+</script>
+</body>
+</html>
